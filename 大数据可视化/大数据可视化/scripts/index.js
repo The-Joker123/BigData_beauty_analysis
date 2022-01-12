@@ -37,64 +37,87 @@ $(function(){
 })
 function init(){
   //地图
-  var mapChart = echarts.init(document.getElementById('mapChart'));
-  mapChart.setOption({
-      bmap: {
-          center: [118.096435,24.485408],
-          zoom: 12,
-          roam: true,
+  // var mapChart = echarts.init(document.getElementById('mapChart'));
+  // mapChart.setOption({
+  //     bmap: {
+  //         center: [118.096435,24.485408],
+  //         zoom: 12,
+  //         roam: true,
+  //
+  //     },
+  //     tooltip : {
+  //         trigger: 'item',
+  //         formatter:function(params, ticket, callback){
+  //             return params.value[2]
+  //         }
+  //     },
+  //     series: [{
+  //         type: 'scatter',
+  //         coordinateSystem: 'bmap',
+  //         data: [
+  //           [118.096435, 24.485408, '厦门市'] ,
+  //           [118.094564, 24.457358, '厦门第一医院'] ,
+  //           [118.104103, 24.477761, '厦门中山医院'],
+  //           [118.14748, 24.506295, '厦门中医院'],
+  //           [118.254841, 24.665349, '厦门第五医院'],
+  //          ]
+  //     }]
+  // });
+  // mapChart.on('click', function (params) {
+  //     $("#el-dialog").removeClass('hide');
+  //     $("#reportTitle").html(params.value[2]);
+  // });
+  //
+  // var bmap = mapChart.getModel().getComponent('bmap').getBMap()
+  // bmap.addControl(new BMap.MapTypeControl({mapTypes: [BMAP_NORMAL_MAP,BMAP_SATELLITE_MAP ]}));
+  // bmap.setMapStyle({style:'midnight'})
 
-      },
-      tooltip : {
-          trigger: 'item',
-          formatter:function(params, ticket, callback){
-              return params.value[2]
-          }
-      },
-      series: [{
-          type: 'scatter',
-          coordinateSystem: 'bmap',
-          data: [
-            [118.096435, 24.485408, '厦门市'] ,
-            [118.094564, 24.457358, '厦门第一医院'] ,
-            [118.104103, 24.477761, '厦门中山医院'],
-            [118.14748, 24.506295, '厦门中医院'],
-            [118.254841, 24.665349, '厦门第五医院'],
-           ]
-      }]
-  });
-  mapChart.on('click', function (params) {
-      $("#el-dialog").removeClass('hide');
-      $("#reportTitle").html(params.value[2]);
-  });
+//-----------------------------------------------
+//各美妆品牌累计销售量
+    fetch('http://localhost:8081/table/Top10_Sum_Brand', {
+        method: "GET",
+    }).then(function (response) {
+        // 拿到响应数据并序列化成json
+        return response.json();
+    }).then(function (res) {
 
-  var bmap = mapChart.getModel().getComponent('bmap').getBMap()
-  bmap.addControl(new BMap.MapTypeControl({mapTypes: [BMAP_NORMAL_MAP,BMAP_SATELLITE_MAP ]}));
-  bmap.setMapStyle({style:'midnight'})
+        var brand=[];
+        for (i in res) {
+            brand[i]= res[i].name;
+        }
+
+        var sum_sale_count=[];
+        for (i in res) {
+            sum_sale_count[i]= res[i];
+        }
+
+        console.log(brand);
+        console.log(sum_sale_count);
 
 
   var pieChart1 = echarts.init(document.getElementById('pieChart1'));
   pieChart1.setOption({
 
-    color:["#87cefa","#ff7f50","#32cd32","#da70d6",],
+
+    color:["#87cefa","#ff7f50","#32cd32","#da70d6","#ea7ccc","#9a60b4","#fc8452","#3ba272","#73c0de","#ee6666"],
 
     legend: {
-        y : '260',
+        y : '225',
         x : 'center',
         textStyle : {
             color : '#ffffff',
 
         },
-         data : ['厦门第一医院','厦门中山医院','厦门中医院','厦门第五医院',],
+         data : brand,
     },
     tooltip : {
         trigger: 'item',
-        formatter: "{a}<br/>{b}<br/>{c}G ({d}%)"
+        formatter: "{a}<br/>{b}<br/>{c} ({d}%)"
     },
     calculable : false,
     series : [
         {
-            name:'采集数据量',
+            name:'累计销售量',
             type:'pie',
             radius : ['40%', '70%'],
             center : ['50%', '45%'],
@@ -118,17 +141,17 @@ function init(){
                     }
                 }
             },
-            data:[
-                {value:335, name:'厦门第一医院'},
-                {value:310, name:'厦门中山医院'},
-                {value:234, name:'厦门中医院'},
-                {value:135, name:'厦门第五医院'}
+            data: sum_sale_count
 
-            ]
+
         }
     ]
+  })
     });
-     fetch('http://localhost:8080/table/dailySales', {
+
+  //每日订单量走势
+    //-----------------------------------------------------------------------------------------------------
+     fetch('http://localhost:8081/table/dailySales', {
         method: "GET",
     }).then(function (response) {
         // 拿到响应数据并序列化成json
@@ -137,10 +160,6 @@ function init(){
         console.log(res)
         console.log(Object.keys(res))
         // 基于准备好的dom，初始化echarts实例
-        // var list = [];
-        // list.push(res.data.sites[1]);
-
-   //每日订单量走势
    var lineChart1 = echarts.init(document.getElementById('Time_Analysis1'));
    lineChart1.setOption({
      title: {
@@ -222,139 +241,7 @@ function init(){
    })
     });
 
-    // var lineChart = echarts.init(document.getElementById('lineChart'));
-    // lineChart.setOption({
-    //
-    //   color:["#87cefa","#ff7f50","#32cd32","#da70d6",],
-    //   legend: {
-    //       y : '260',
-    //       x : 'center',
-    //       textStyle : {
-    //           color : '#ffffff',
-    //
-    //       },
-    //        data : ['厦门第一医院','厦门中山医院','厦门中医院','厦门第五医院',],
-    //   },
-    //   calculable : false,
-    //   tooltip : {
-    //       trigger: 'item',
-    //       formatter: "{a}<br/>{b}<br/>{c}条"
-    //   },
-    //   yAxis: [
-    //         {
-    //             type: 'value',
-    //             axisLine : {onZero: false},
-    //             axisLine:{
-    //                 lineStyle:{
-    //                     color: '#034c6a'
-    //                 },
-    //             },
-    //
-    //             axisLabel: {
-    //                 textStyle: {
-    //                     color: '#fff'
-    //                 },
-    //                 formatter: function (value) {
-    //                     return value + "k条"
-    //                 },
-    //             },
-    //             splitLine:{
-    //                 lineStyle:{
-    //                     width:0,
-    //                     type:'solid'
-    //                 }
-    //             }
-    //         }
-    //     ],
-    //     xAxis: [
-    //         {
-    //             type: 'category',
-    //             data : ['8:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00'],
-    //             axisLine:{
-    //                 lineStyle:{
-    //                     color: '#034c6a'
-    //                 },
-    //             },
-    //             splitLine: {
-    //                 "show": false
-    //             },
-    //             axisLabel: {
-    //                 textStyle: {
-    //                     color: '#fff'
-    //                 },
-    //                 formatter: function (value) {
-    //                     return value + ""
-    //                 },
-    //             },
-    //             splitLine:{
-    //                 lineStyle:{
-    //                     width:0,
-    //                     type:'solid'
-    //                 }
-    //             },
-    //         }
-    //     ],
-    //     grid:{
-    //             left: '5%',
-    //             right: '5%',
-    //             bottom: '20%',
-    //             containLabel: true
-    //     },
-    //     series : [
-    //       {
-    //           name:'厦门第一医院',
-    //           type:'line',
-    //           smooth:true,
-    //           itemStyle: {
-    //               normal: {
-    //                   lineStyle: {
-    //                       shadowColor : 'rgba(0,0,0,0.4)'
-    //                   }
-    //               }
-    //           },
-    //           data:[15, 0, 20, 45, 22.1, 25, 70, 55, 76]
-    //       },
-    //       {
-    //           name:'厦门中山医院',
-    //           type:'line',
-    //           smooth:true,
-    //           itemStyle: {
-    //               normal: {
-    //                   lineStyle: {
-    //                       shadowColor : 'rgba(0,0,0,0.4)'
-    //                   }
-    //               }
-    //           },
-    //           data:[25, 10, 30, 55, 32.1, 35, 80, 65, 76]
-    //       },
-    //       {
-    //           name:'厦门中医院',
-    //           type:'line',
-    //           smooth:true,
-    //           itemStyle: {
-    //               normal: {
-    //                   lineStyle: {
-    //                       shadowColor : 'rgba(0,0,0,0.4)'
-    //                   }
-    //               }
-    //           },
-    //           data:[35, 20, 40, 65, 42.1, 45, 90, 75, 96]
-    //       },
-    //       {
-    //           name:'厦门第五医院',
-    //           type:'line',
-    //           smooth:true,
-    //           itemStyle: {
-    //               normal: {
-    //                   lineStyle: {
-    //                       shadowColor : 'rgba(0,0,0,0.4)'
-    //                   }
-    //               }
-    //           },
-    //           data:[45, 30, 50, 75, 52.1, 55, 100, 85, 106]
-    //       }
-    //   ]
-    // });
+    //-----------------------------------------------------------------------------------------------------
 
     var histogramChart = echarts.init(document.getElementById('histogramChart'));
     histogramChart.setOption({
@@ -882,77 +769,277 @@ function init2(){
         }
     ]
   })
-    //主要传染病
-     fetch('http://localhost:7777/Hourly_Analysis', {
+    //-----------------------------------------------------------------------------------------------------
+    //各美妆销售量
+     fetch('http://localhost:8081/table/Top20_Day_Brand', {
         method: "GET",
     }).then(function (response) {
         // 拿到响应数据并序列化成json
         return response.json();
     }).then(function (res) {
-        console.log(res)
-        console.log(Object.keys(res))
-   var histogramChart1 = echarts.init(document.getElementById('Hourly_Analysis1'));
-   histogramChart1.setOption({
 
-     color:['#5bc0de'],
-     grid:{
-         left: '5%',
-         right: '5%',
-         bottom: '5%',
-         containLabel: true
-     },
-     tooltip : {
-        trigger: 'item',
-        formatter: ""
-    },
-     calculable : true,
-     xAxis : [
-         {
-             type : 'category',
-             data :Object.keys(res) ,
-             axisLine:{
-                  lineStyle:{
-                      color: '#5bc0de'
-                  },
-              },
-              axisLabel : {
-                interval:0,
-                rotate:40,
-                  textStyle: {
-                      color: '#fff'
-                  }
-              }
+
+         var sale_count_20161105=[], sale_amount_20161105=[];
+         for (i in res) {
+             sale_count_20161105[i]= res[0][i].sale_count/10000;
+             console.log(sale_count_20161105[i]+" /"+i);
+             sale_amount_20161105[i]= res[0][i].sale_amount/10000/100;
          }
-     ],
-     yAxis : [
-         {
-             type : 'value',
-             axisLine:{
-                 lineStyle:{
-                     color: '#5bc0de'
-                 },
-             },
-             splitLine: {
-                 "show": false
-             },
-             axisLabel: {
-                 textStyle: {
-                     color: '#fff'
-                 },
-                 formatter: function (value) {
-                     return value + ""
-                 },
-             },
+
+         var sale_count_20161106=[], sale_amount_20161106=[];
+         for (i in res) {
+             sale_count_20161106[i]= res[1][i].sale_count/10000;
+             sale_amount_20161106[i]= res[1][i].sale_amount/10000/100;
          }
-     ],
-     series : [
-         {
-             name:'订单量',
-             type:'bar',
-             barWidth : 20,
-             data:Object.values(res) ,
-         },
-     ]
-   })
- });
-}
+
+         var sale_count_20161107=[], sale_amount_20161107=[];
+         for (i in res) {
+             sale_count_20161107[i]= res[2][i].sale_count/10000;
+             sale_amount_20161107[i]=res[2][i].sale_amount/10000/100;
+         }
+
+         var sale_count_20161108=[], sale_amount_20161108=[];
+         for (i in res) {
+             sale_count_20161108[i]= res[3][i].sale_count/10000;
+             sale_amount_20161108[i]= res[3][i].sale_amount/10000/100;
+         }
+
+         var sale_count_20161109=[], sale_amount_20161109=[];
+         for (i in res) {
+             sale_count_20161109[i]= res[4][i].sale_count/10000;
+             sale_amount_20161109[i]= res[4][i].sale_amount/10000/100;
+         }
+
+         var sale_count_20161110=[], sale_amount_20161110=[];
+         for (i in res) {
+             sale_count_20161110[i]= res[5][i].sale_count/10000;
+             sale_amount_20161110[i]= res[5][i].sale_amount/10000/100;
+         }
+
+         var sale_count_20161111=[], sale_amount_20161111=[];
+         for (i in res) {
+             sale_count_20161111[i]= res[6][i].sale_count/10000;
+             sale_amount_20161111[i]= res[6][i].sale_amount/10000/100;
+         }
+
+         var sale_count_20161112=[], sale_amount_20161112=[];
+         for (i in res) {
+             sale_count_20161112[i]= res[7][i].sale_count/10000;
+             sale_amount_20161112[i]= res[7][i].sale_amount/10000/100;
+         }
+
+         var sale_count_20161113=[], sale_amount_20161113=[];
+         for (i in res) {
+             sale_count_20161113[i]= res[8][i].sale_count/10000;
+             sale_amount_20161113[i]= res[8][i].sale_amount/10000/100;
+         }
+
+         var sale_count_20161114=[], sale_amount_20161114=[];
+         for (i in res) {
+             sale_count_20161114[i]= res[9][i].sale_count/10000;
+             sale_amount_20161114[i]= res[9][i].sale_amount/10000/100;
+         }
+
+         var brand_20161105=[];
+         for (i in res) {
+             brand_20161105[i]= res[0][i].brand;
+
+         }
+         var years=[];
+         for (i in res) {
+             years[i]= res[i][0].year;
+
+         }
+
+         console.log(years);
+
+
+         var chartDom = document.getElementById('count_amount')
+         var myChart = echarts.init(chartDom);
+
+         var option;
+
+         option = {
+             baseOption: {
+                 timeline: {
+
+                     axisType: 'category',
+                     // realtime: false,
+                     // loop: false,
+                     autoPlay: true,
+                     // currentIndex: 2,
+                     playInterval: 1000,
+                     // controlStyle: {
+                     //     position: 'left'
+                     // },
+                     data:years,
+                     label: {
+                         color: "rgba(255, 255, 255, 1)"
+                     }
+                 },
+                 title: {
+                     subtext: '',
+                     textStyle: {
+
+                         color: "rgba(255, 255, 255, 1)"
+                     },
+                 },
+                 tooltip: {},
+                 legend: {
+                     textStyle: {
+                         color: "rgba(255, 255, 255, 255)"
+                     },
+                     left: 267,
+                     top:10,
+                     data: ['销售额', '销售量']
+                 },
+                 calculable: true,
+                 grid: {
+                     top: 80,
+                     bottom: 100,
+                     // width:400,
+                     tooltip: {
+                         trigger: 'axis',
+                         axisPointer: {
+                             type: 'shadow',
+                             label: {
+                                 show: true,
+                                 formatter: function (params) {
+                                     return params.value.replace('\n', '');
+                                 }
+                             }
+                         }
+                     }
+                 },
+                 xAxis: [
+                     {
+                         type: 'category',
+
+                         axisLabel: { interval: 0 },
+                         data:brand_20161105,
+                         axisLine:{
+                             lineStyle:{
+                                 color: '#ffffff'
+                             },
+                         },
+                         splitLine: { show: false }
+                     },
+
+                 ],
+                 series1: [
+
+                 ],
+                 yAxis: [
+                     {
+                         type:'value',
+                         axisLine:{
+                             lineStyle:{
+                                 color: '#ffffff'
+                             },
+                         },
+                         name: 'GDP（亿元）'
+
+                     }
+                 ],
+                 series: [
+                     { name: '销售量', type: 'bar' },
+                     { name: '销售额', type: 'bar' }
+
+                 ]
+             },
+             options: [
+                 {
+                     title: { text: '2016-11-05各美妆销售量' },
+                     series1: [
+                         { data: brand_20161105},
+
+                     ],
+                     series: [
+                         { data: sale_count_20161105},
+                         { data: sale_amount_20161105},
+
+                     ]
+
+                 },
+                 {
+                     title: { text: '2016-11-06各美妆销售量' },
+                     series: [
+                         { data: Object.values(sale_count_20161106)},
+                         { data: sale_amount_20161106},
+
+                     ]
+                 },
+                 {
+                     title: { text: '2016-11-07各美妆销售量' },
+                     series: [
+                         { data: Object.values(sale_count_20161107)},
+                         { data: Object.values(sale_amount_20161107)},
+
+                     ]
+                 },
+                 {
+                     title: { text: '2016-11-08各美妆销售量' },
+                     series: [
+                         { data: Object.values(sale_count_20161108)},
+                         { data: Object.values(sale_amount_20161108)},
+                     ]
+                 },
+                 {
+                     title: { text: '2016-11-09各美妆销售量' },
+                     series: [
+                         { data: Object.values(sale_count_20161109)},
+                         { data: Object.values(sale_amount_20161109)},
+                     ]
+                 },
+                 {
+                     title: { text: '2016-11-10各美妆销售量' },
+                     series: [
+                         { data: Object.values(sale_count_20161110)},
+                         { data: Object.values(sale_amount_20161110)},
+
+                     ]
+                 },
+                 {
+                     title: { text: '2016-11-11各美妆销售量' },
+                     series: [
+                         { data: Object.values(sale_count_20161111)},
+                         { data: Object.values(sale_amount_20161111)},
+
+                     ]
+                 },
+                 {
+                     title: { text: '2016-11-12各美妆销售量' },
+
+                     series: [
+                         { data: Object.values(sale_count_20161112)},
+                         { data: Object.values(sale_amount_20161112)},
+
+                     ]
+                 },
+                 {
+                     title: { text: '2016-11-13各美妆销售量'},
+                     series: [
+                         { data: Object.values(sale_count_20161113)},
+                         { data: Object.values(sale_amount_20161113)},
+
+                     ]
+                 },
+                 {
+                     title: { text: '2016-11-14各美妆销售量' },
+                     series: [
+                         { data: Object.values(sale_count_20161114)},
+                         { data: Object.values(sale_amount_20161114)},
+
+                     ]
+                 }
+             ]
+         };
+
+         option && myChart.setOption(option);
+
+
+
+
+
+
+     })};
