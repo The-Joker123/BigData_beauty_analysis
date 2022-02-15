@@ -1,8 +1,11 @@
-#1.数据集说明
+# 1.数据集说明
 
-#2.数据处理
-##2.1数据导入
+## 2.数据处理
+
+### 2.1数据导入
+
 将数据加载到 hive, 然后通过 hive 对数据进行数据处理。
+
 ```SQL
 -- 建表销售订单表
 Create table  sales_order_table(
@@ -26,10 +29,12 @@ fields terminated by '\t' lines terminated by '\n';
 LOAD DATA  INPATH  '/data/销售订单表.txt' OVERWRITE INTO TABLE sales_order_table;     
 
 ```
-##2.2数据清洗
+### 2.2数据清洗
+
 数据处理主要包括：删除重复值，时间戳格式化，删除异常值。
 
-####商品信息表
+#### 商品信息表
+
 ```SQL
 
 --查看重复数据有多少
@@ -55,8 +60,9 @@ select order_code,replace(translate(order_date,'/',space(3)),space(1),'-'),custo
 insert overwrite table sales_order_table 
 select order_code,order_date,customer_code,district,replace(translate(province,'自治区维吾尔回族壮族省市',space(7)),space(1),space(0)),replace(translate(location,'自治区维吾尔回族壮族省市',space(7)),space(1),space(0)),product_number,number_orders,order_price,amount from sales_order_table
 ```
-#3.数据分析可视化
-##Top10各美妆品牌销售量
+## 3.数据分析可视化
+
+### Top10各美妆品牌销售量
 
 ```sql
 select * from(select trade_name,Sum(COALESCE(sale_count,0)) as o2,rank() over ( order by Sum(COALESCE(sale_count,0)) desc) as ranking from cosmetics_data group by trade_name ) as t1 
@@ -64,16 +70,21 @@ where t1.ranking<=10"
 
 ```
 ![image.png](https://s2.loli.net/2022/02/15/QHKe6Ys1o9dDImw.png)
-##每日订单量走势
+
+### 每日订单量走势
+
 ```sql
 select cast(update_time as date) as day,Sum(COALESCE(sale_count,0)) from cosmetics_data 
 group by cast(update_time as date)  order by day"
 ```
 ![image.png](https://s2.loli.net/2022/02/15/hnMYq4CAoUB5sk9.png)
 
-##每月各美妆销售量
+### 每月各美妆销售量
+
 ```sql
 select * from(select month(order_date) as m,Sum(number_orders) ,Sum(amount) from sales_order_table 
 group by month(order_date) order by month(order_date)) as t1 where t1.m>=1 and t1.m<=9 
 ```
 ![image.png](https://s2.loli.net/2022/02/15/UuxDeg1bZysYiWf.png)
+
+**未完待续......**
