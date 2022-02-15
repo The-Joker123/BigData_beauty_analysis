@@ -49,6 +49,7 @@ public class dataAnalysis {
             map.put(res.getString(1),res.getInt(2));
             logger.info(str);
         }
+
         System.out.println(map);
         return map;
     }
@@ -105,7 +106,7 @@ public class dataAnalysis {
 
             Top10_Sum_Brand top10_Sum_Brand=new Top10_Sum_Brand();
             top10_Sum_Brand.setName(res.getString(1));
-            top10_Sum_Brand.setValue(res.getInt(2));
+            top10_Sum_Brand.setValue((res.getDouble(2))/10000);
             list.add( top10_Sum_Brand);
         }
 

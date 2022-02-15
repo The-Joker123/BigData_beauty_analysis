@@ -5,7 +5,7 @@ package com.example.demo.pojo;
  * @date
  */
 public class Top10_Sum_Brand {
-    private int value;
+    private double value;
     private String name;
 
     public Top10_Sum_Brand(int value, String name) {
@@ -16,11 +16,11 @@ public class Top10_Sum_Brand {
 
     }
 
-    public int getValue() {
+    public double getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(double value) {
         this.value = value;
     }
 
