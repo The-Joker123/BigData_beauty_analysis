@@ -56,15 +56,24 @@ insert overwrite table sales_order_table
 select order_code,order_date,customer_code,district,replace(translate(province,'自治区维吾尔回族壮族省市',space(7)),space(1),space(0)),replace(translate(location,'自治区维吾尔回族壮族省市',space(7)),space(1),space(0)),product_number,number_orders,order_price,amount from sales_order_table
 ```
 #3.数据分析可视化
-##Top10美妆品牌销售量
+##Top10各美妆品牌销售量
 
 ```sql
 select * from(select trade_name,Sum(COALESCE(sale_count,0)) as o2,rank() over ( order by Sum(COALESCE(sale_count,0)) desc) as ranking from cosmetics_data group by trade_name ) as t1 
 where t1.ranking<=10"
 
 ```
+![image.png](https://s2.loli.net/2022/02/15/QHKe6Ys1o9dDImw.png)
 ##每日订单量走势
 ```sql
 select cast(update_time as date) as day,Sum(COALESCE(sale_count,0)) from cosmetics_data 
 group by cast(update_time as date)  order by day"
 ```
+![image.png](https://s2.loli.net/2022/02/15/hnMYq4CAoUB5sk9.png)
+
+##每月各美妆销售量
+```sql
+select * from(select month(order_date) as m,Sum(number_orders) ,Sum(amount) from sales_order_table 
+group by month(order_date) order by month(order_date)) as t1 where t1.m>=1 and t1.m<=9 
+```
+![image.png](https://s2.loli.net/2022/02/15/UuxDeg1bZysYiWf.png)
