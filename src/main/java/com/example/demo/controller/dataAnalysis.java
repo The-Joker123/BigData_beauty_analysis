@@ -52,7 +52,7 @@ public class dataAnalysis {
         System.out.println(map);
         return map;
     }
-
+//Top10的销售记录
 //    select cast(update_time as date),trade_name,Sum(COALESCE(sale_count,0)),Sum(COALESCE(sale_amount,0)),row_number() over (partition by cast(update_time as date)  order by cast(update_time as date), Sum(COALESCE(sale_count,0)) desc) as ranking from cosmetics_data ;
 //cast(update_time as date),trade_name,Sum(COALESCE(sale_amount,0)),Sum(COALESCE(sale_count,0)),rank() over(partition by cast(update_time as date)  order by Sum(COALESCE(sale_count,0))  desc ) as ranking
     @RequestMapping("/table/Top20_Day_Brand")
