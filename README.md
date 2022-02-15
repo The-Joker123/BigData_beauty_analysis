@@ -63,3 +63,8 @@ select * from(select trade_name,Sum(COALESCE(sale_count,0)) as o2,rank() over ( 
 where t1.ranking<=10"
 
 ```
+##每日订单量走势
+```sql
+select cast(update_time as date) as day,Sum(COALESCE(sale_count,0)) from cosmetics_data 
+group by cast(update_time as date)  order by day"
+```
