@@ -17,9 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-public class IndexController {
+public class Data_Cleaning {
 
-    public static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+    public static final Logger logger = LoggerFactory.getLogger(Data_Cleaning.class);
 
     @Autowired
     @Qualifier("hiveDruidDataSource")
@@ -29,6 +29,7 @@ public class IndexController {
     @Qualifier("hiveDruidTemplate")
     private JdbcTemplate jdbcTemplate;
 
+    //查询数据表
     @RequestMapping("/table/show")
     public List<String> showtables() {
         List<String> list = new ArrayList<String>();
@@ -46,8 +47,9 @@ public class IndexController {
         }
         return list;
     }
-    //数据数据库
-    @RequestMapping("/databases/show")
+
+    //查询数据库
+    @RequestMapping("/databases/showdatabases")
     public List<String> showdatabases() {
         List<String> list = new ArrayList<String>();
         Statement statement = null;
@@ -65,9 +67,7 @@ public class IndexController {
         return list;
     }
 
-    /**
-     * 创建新表
-     */
+   //创建新表
     @RequestMapping("/table/create")
     public String createTable() {
         StringBuffer sql = new StringBuffer("CREATE TABLE IF NOT EXISTS ");
@@ -86,12 +86,9 @@ public class IndexController {
             logger.error(result);
         }
         return result;
-
     }
 
-    /**
-     * 将Hive服务器本地文档中的数据加载到Hive表中
-     */
+ //将HDFS服务器本地文档中的数据加载到Hive表中
     @RequestMapping("/table/load")
     public String loadIntoTable() {
         String filepath = "/data/双十一淘宝美妆数据.csv";
@@ -106,9 +103,10 @@ public class IndexController {
         }
         return result;
     }
+
 //扫描cosmetics_data表中所有数据
-    @RequestMapping("/table/selectAll")
-    public List<String> selectFromTable() throws SQLException {
+    @RequestMapping("/table/selectAll_cosmetics_data")
+    public List<String> selectAll_cosmetics_data() throws SQLException {
         // Statement statement = jdbcDataSource.getConnection().createStatement();
         Statement statement = druidDataSource.getConnection().createStatement();
         String sql = "select * from " + "cosmetics_data";
@@ -130,7 +128,6 @@ public class IndexController {
     }
 
 //   查看重复数据多少
-//select update_time,id,title,price,sale_count,comment_count,trade_name,count(*) from cosmetics_data group by update_time,id,title,price,sale_count,comment_count,trade_name having count(*)>1
     @RequestMapping("/table/countRepetition")
     public List<String> countRepetition() throws SQLException {
         // Statement statement = jdbcDataSource.getConnection().createStatement();
@@ -152,6 +149,7 @@ public class IndexController {
         }
         return list;
     }
+
     //查看cosmetics_data表结构
     @RequestMapping("/table/descTable")
     public List<String> descTable() throws SQLException {
@@ -174,6 +172,7 @@ public class IndexController {
         }
         return list;
     }
+
 //向表中插入新数据
     @RequestMapping("/table/insert")
     public String insertIntoTable() {
@@ -188,6 +187,7 @@ public class IndexController {
         }
         return result;
     }
+
 //重写数据
     @RequestMapping("/table/overwrite")
     public String overwriteTable() {

@@ -2,12 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.pojo.Top10_Day_Brand;
 import com.example.demo.pojo.Top10_Sum_Brand;
-import org.apache.commons.math3.stat.descriptive.summary.Sum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +19,9 @@ import java.util.*;
 
 @RestController
 @CrossOrigin
-public class dataAnalysis {
+public class Data_Brand_Analysis {
 
-    public static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+    public static final Logger logger = LoggerFactory.getLogger(Data_Cleaning.class);
 
     @Autowired
     @Qualifier("hiveDruidDataSource")
@@ -33,7 +31,7 @@ public class dataAnalysis {
     @Qualifier("hiveDruidTemplate")
     private JdbcTemplate jdbcTemplate;
 
-//select update_time,Sum(COALESCE(sale_count,0)) from cosmetics_data group by update_time order by update_time;
+    //每日销售走势
     @RequestMapping("/table/dailySales")
     public HashMap<String,Integer> dailySales() throws SQLException {
         // Statement statement = jdbcDataSource.getConnection().createStatement();
@@ -53,11 +51,12 @@ public class dataAnalysis {
         System.out.println(map);
         return map;
     }
+
 //Top10的销售记录
 //    select cast(update_time as date),trade_name,Sum(COALESCE(sale_count,0)),Sum(COALESCE(sale_amount,0)),row_number() over (partition by cast(update_time as date)  order by cast(update_time as date), Sum(COALESCE(sale_count,0)) desc) as ranking from cosmetics_data ;
 //cast(update_time as date),trade_name,Sum(COALESCE(sale_amount,0)),Sum(COALESCE(sale_count,0)),rank() over(partition by cast(update_time as date)  order by Sum(COALESCE(sale_count,0))  desc ) as ranking
-    @RequestMapping("/table/Top20_Day_Brand")
-    public ArrayList<ArrayList<Top10_Day_Brand>>  Top20_Day_Brand() throws SQLException {
+    @RequestMapping("/table/Top10_Day_Brand")
+    public ArrayList<ArrayList<Top10_Day_Brand>>  Top10_Day_Brand() throws SQLException {
         // Statement statement = jdbcDataSource.getConnection().createStatement();
         Statement statement = druidDataSource.getConnection().createStatement();
             String sql = "select * from(select cast(update_time as date) as day,trade_name,Sum(COALESCE(sale_amount,0)) as o1,Sum(COALESCE(sale_count,0)) as o2,rank() over (partition by cast(update_time as date) order by Sum(COALESCE(sale_count,0)) desc) as ranking from cosmetics_data group by cast(update_time as date),trade_name order by day desc) as t1 where t1.ranking<=10";
@@ -90,7 +89,8 @@ public class dataAnalysis {
         return big_list;
 
     }
-//    select * from(trade_name,Sum(COALESCE(sale_count,0)) as o2,rank() over ( order by Sum(COALESCE(sale_count,0)) desc) as ranking from cosmetics_data group by trade_name order by o2 desc) as t1 where t1.ranking<=10
+
+    //前10美妆销售量排名
     @RequestMapping("/table/Top10_Sum_Brand")
     public ArrayList<Top10_Sum_Brand>  Top10_Sum_Brand() throws SQLException {
         // Statement statement = jdbcDataSource.getConnection().createStatement();
@@ -109,8 +109,6 @@ public class dataAnalysis {
             top10_Sum_Brand.setValue((res.getDouble(2))/10000);
             list.add( top10_Sum_Brand);
         }
-
         return list;
-
     }
 }

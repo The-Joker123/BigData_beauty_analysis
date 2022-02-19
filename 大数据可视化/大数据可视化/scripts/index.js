@@ -55,11 +55,11 @@ $(function(){
   //         type: 'scatter',
   //         coordinateSystem: 'bmap',
   //         data: [
-  //           [118.096435, 24.485408, '厦门市'] ,
-  //           [118.094564, 24.457358, '厦门第一医院'] ,
-  //           [118.104103, 24.477761, '厦门中山医院'],
-  //           [118.14748, 24.506295, '厦门中医院'],
-  //           [118.254841, 24.665349, '厦门第五医院'],
+  //           [118.096435, 24.485408, ''] ,
+  //           [118.094564, 24.457358, ''] ,
+  //           [118.104103, 24.477761, ''],
+  //           [118.14748, 24.506295, ''],
+  //           [118.254841, 24.665349, ''],
   //          ]
   //     }]
   // });
@@ -620,75 +620,11 @@ $(function(){
   //       },
   //   ]
   // });
-  //
-  // //年龄分布
-  // var pieChart2 = echarts.init(document.getElementById('pieChart2'));
-  // pieChart2.setOption({
-  //   color:["#32cd32","#ff7f50","#87cefa","#FD6C88","#4b5cc4","#faff72"],
-  //   tooltip : {
-  //    trigger: 'item',
-  //    formatter: "{a}<br/>{b}<br/>{c}人"
-  //   },
-  //   calculable : true,
-  //   series : [
-  //       {
-  //           name:'发病人数',
-  //           type:'pie',
-  //           radius : [30, 110],
-  //           center : ['50%', '50%'],
-  //           roseType : 'area',
-  //           x: '50%',
-  //
-  //
-  //
-  //           sort : 'ascending',
-  //           data:[
-  //               {value:10, name:'婴儿(1-3岁)'},
-  //               {value:5, name:'少儿(4-10岁)'},
-  //               {value:15, name:'少年(10-18岁)'},
-  //               {value:25, name:'青年(18-45岁)'},
-  //               {value:125, name:'中年(45-60岁)'},
-  //               {value:175, name:'老年(60岁以上)'},
-  //           ]
-  //       }
-  //   ]
-  // })
-  //
-  // 医疗费用组成
-  // var pieChart3 = echarts.init(document.getElementById('pieChart3'));
-  // pieChart3.setOption({
-  //   color:["#32cd32","#ff7f50","#87cefa","#FD6C88","#4b5cc4","#faff72"],
-  //   tooltip : {
-  //    trigger: 'item',
-  //    formatter: "{a}<br/>{b}<br/>{c}元"
-  //   },
-  //   calculable : true,
-  //   series : [
-  //       {
-  //           name:'发病人数',
-  //           type:'pie',
-  //           radius : [30, 110],
-  //           center : ['50%', '50%'],
-  //           roseType : 'area',
-  //           x: '50%',
-  //
-  //
-  //
-  //           sort : 'ascending',
-  //           data:[
-  //               {value:10, name:'诊察费用'},
-  //               {value:500, name:'检查费用'},
-  //               {value:150, name:'检验费用'},
-  //               {value:250, name:'西药费用'},
-  //               {value:125, name:'中药费用'},
-  //               {value:1750, name:'手术费用'},
-  //           ]
-  //       }
-  //   ]
-  // });
+
+
     //-----------------------------------------------------------------------------------------------------
-    //各美妆销售量
-     fetch('http://localhost:8080/table/Top20_Day_Brand', {
+    //前10美妆销售量排名
+     fetch('http://localhost:8080/table/Top10_Day_Brand', {
         method: "GET",
     }).then(function (response) {
         // 拿到响应数据并序列化成json
