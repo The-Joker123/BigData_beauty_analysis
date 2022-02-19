@@ -1,5 +1,13 @@
-# 1.数据集说明
+## 项目介绍
 
+1. 使用Hadoop技术可快速生成分析结果，对6万条美妆销售数据分析，将数据转化为有价值的数据。
+2. 在Centos7中搭建Hadoop和Hive环境。SpringBoot整合HiveJdbc, 远程连接HiveServer2，并结合Java和HiveSQL
+   对存储在Hadoop 的6万条电商数据，进行数据分析。后端生成Json 格式，前端解析Json格式，并实现数据大屏可视化。
+3. 通过大数据分析，生成有价值数据：每日订单量走势，前10销售品牌，哪里人最爱美等。
+
+
+## 1.数据集说明
+对6万条美妆销售数据分析，将数据转化为有价值的数据。
 ## 2.数据处理
 
 ### 2.1数据导入
@@ -50,7 +58,8 @@ select  * from sales_order_table
 where order_code IS NULL OR order_date IS NULL OR customer_code IS NULL OR district IS NULL OR province IS NULL OR location IS NULL OR product_number IS NULL OR number_orders IS NULL OR order_price IS NULL OR amount IS NULL
 --清除空数据
 insert overwrite table sales_order_table 
-select order_code,order_date,customer_code,district,province,location,product_number,COALESCE(number_orders,0),COALESCE(order_price,0),COALESCE(amount,0) from sales_order_table
+select order_code,order_date,customer_code,district,province,location,product_number,COALESCE(number_orders,0),COALESCE(order_price,0),COALESCE(amount,0) 
+from sales_order_table
 
 --修改日期格式
 insert overwrite table sales_order_table
@@ -58,15 +67,17 @@ select order_code,replace(translate(order_date,'/',space(3)),space(1),'-'),custo
 
 --修改省份格式
 insert overwrite table sales_order_table 
-select order_code,order_date,customer_code,district,replace(translate(province,'自治区维吾尔回族壮族省市',space(7)),space(1),space(0)),replace(translate(location,'自治区维吾尔回族壮族省市',space(7)),space(1),space(0)),product_number,number_orders,order_price,amount from sales_order_table
+select order_code,order_date,customer_code,district,replace(translate(province,'自治区维吾尔回族壮族省市',space(7)),space(1),space(0)),replace(translate(location,'自治区维吾尔回族壮族省市',space(7)),space(1),space(0)),product_number,number_orders,order_price,amount 
+from sales_order_table
 ```
 ## 3.数据分析可视化
 
 ### Top10各美妆品牌销售量
 
 ```sql
-select * from(select trade_name,Sum(COALESCE(sale_count,0)) as o2,rank() over ( order by Sum(COALESCE(sale_count,0)) desc) as ranking from cosmetics_data group by trade_name ) as t1 
-where t1.ranking<=10"
+select * from(
+    select trade_name,Sum(COALESCE(sale_count,0)) as o2,rank() over ( order by   		Sum(COALESCE(sale_count,0)) desc) as ranking from cosmetics_data group by trade_name ) as t1 
+    where t1.ranking<=10
 
 ```
 ![image.png](https://s2.loli.net/2022/02/15/QHKe6Ys1o9dDImw.png)
