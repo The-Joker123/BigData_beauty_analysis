@@ -1,4 +1,4 @@
-var symptomName = last_month_day();
+// var symptomName = last_month_day();
 
 $(function(){
 
@@ -152,7 +152,7 @@ $(function(){
 
   //每日订单量走势
     //-----------------------------------------------------------------------------------------------------
-     fetch('http://localhost:8080/table/dailySales', {
+     fetch('http://localhost:8081/table/dailySales', {
         method: "GET",
     }).then(function (response) {
         // 拿到响应数据并序列化成json
@@ -336,8 +336,8 @@ $(function(){
    })});
 
 
-    //每日订单量走势
-    //-----------------------------------------------------------------------------------------------------
+    // //每日订单量走势
+    // //-----------------------------------------------------------------------------------------------------
     // fetch('http://localhost:8081/table/dailySales', {
     //     method: "GET",
     // }).then(function (response) {
@@ -621,10 +621,85 @@ $(function(){
   //   ]
   // });
 
+//哪里人最爱美
+fetch('http://localhost:8080/sales_order_table/where_people_beauty', {
+    method: "GET",
+}).then(function (response) {
+    // 拿到响应数据并序列化成json
+    return response.json();
+}).then(function (res) {
+    var  location=[];
+    for ( i in res) {
+        location[i]= res[i].location;
+    }
+    location.reverse();
+
+    var  amounts=[];
+    for (i in res) {
+        amounts[i]= res[i].amount;
+    }
+    amounts.reverse()
+
+    console.log(location);
+    console.log(amounts);
+    var histogramChart = echarts.init(document.getElementById('lineChart2'));
+    histogramChart.setOption({
+        color:["#87cefa","#ff7f50",],
+
+        title: {
+            subtext: '每月订购情况'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: ['订购数量']
+        },
+        toolbox: {
+            show: true,
+            feature: {
+                dataView: { show: true, readOnly: false }
+                // magicType: { show: true, type: ['line', 'bar'] },
+                // restore: { show: true },
+                // saveAsImage: { show: true }
+            }
+        },
+        calculable: true,
+        xAxis: [
+            {
+
+                type: 'value',
+                // prettier-ignore
+
+            }
+        ],
+        yAxis: [
+            {
+                type: 'category',
+                data: location
+            }
+        ],
+        series: [
+            {
+                name: '订购数量',
+                type: 'bar',
+                data: amounts
+                // markPoint: {
+                //     data: [
+                //         { type: 'max', name: 'Max' },
+                //         { type: 'min', name: 'Min' }
+                //     ]
+                // },
+                // markLine: {
+                //     data: [{ type: 'average', name: 'Avg' }]
+                // }
+            }
+        ]
+    })});
 
     //-----------------------------------------------------------------------------------------------------
     //前10美妆销售量排名
-     fetch('http://localhost:8080/table/Top10_Day_Brand', {
+     fetch('http://localhost:8081/table/Top10_Day_Brand', {
         method: "GET",
     }).then(function (response) {
         // 拿到响应数据并序列化成json
