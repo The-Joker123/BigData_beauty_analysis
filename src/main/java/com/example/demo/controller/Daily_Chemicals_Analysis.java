@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.pojo.MonthlySubscription;
+import com.example.demo.pojo.RegionalSales;
 import com.example.demo.pojo.WherePeopleBeauty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,34 +24,27 @@ public class Daily_Chemicals_Analysis {
 
     public static final Logger logger = LoggerFactory.getLogger(Data_Cleaning.class);
 
-    @Autowired
-    @Qualifier("hiveDruidDataSource")
-    private DataSource druidDataSource;
+
 
     @Autowired
-    @Qualifier("hiveDruidTemplate")
-    private JdbcTemplate jdbcTemplate;
-
+    private   CustomProducer customProducer;
 
     //每个月订阅情况
     @RequestMapping("/sales_order_table/Monthly_subscription")
     public ArrayList<MonthlySubscription>  Monthly_subscription() throws SQLException {
-        // Statement statement = jdbcDataSource.getConnection().createStatement();
-        Statement statement = druidDataSource.getConnection().createStatement();
-        String sql = "select * from(select month(order_date) as m,Sum(number_orders) ,Sum(amount) from sales_order_table group by month(order_date) order by month(order_date)) as t1 where t1.m>=1 and t1.m<=9 ";
-//        因此对NULL进行判断处理时，只能采用IS NULL或IS NOT NULL，而不能采用=, <, <>, !=这些操作符。
-        logger.info("Running: " + sql);
-        ResultSet res = statement.executeQuery(sql);
-        ArrayList<MonthlySubscription> list = new ArrayList<>();
 
+        String sql = "select * from(select month(order_date) as m,Sum(number_orders) ,Sum(amount) from sales_order_table group by month(order_date) order by month(order_date)) as t1 where t1.m>=1 and t1.m<=9 ";
+
+        ArrayList<MonthlySubscription> list = new ArrayList<>();
+        ResultSet res=customProducer.Test(sql);
         int count = res.getMetaData().getColumnCount();
 
         while (res.next()) {
 
             MonthlySubscription monthlySubscription =new MonthlySubscription();
             monthlySubscription.setOrder_date(res.getString(1));
-            monthlySubscription.setNumber_orders(res.getInt(2));
-            monthlySubscription.setAmount(res.getInt(3));
+            monthlySubscription.setNumber_orders(res.getDouble(2)/1000000);
+            monthlySubscription.setAmount(res.getDouble(3)/10000000);
             list.add( monthlySubscription);
         }
         return list;
@@ -61,16 +55,12 @@ public class Daily_Chemicals_Analysis {
     //哪里人最爱
     @RequestMapping("/sales_order_table/where_people_beauty")
     public ArrayList<WherePeopleBeauty>  where_people_beauty() throws SQLException {
-        // Statement statement = jdbcDataSource.getConnection().createStatement();
-        Statement statement = druidDataSource.getConnection().createStatement();
-        String sql = "select location, Sum(number_orders),rank() over ( order by Sum(number_orders) desc) as ranking from sales_order_table group by location limit 0,20";
-//        因此对NULL进行判断处理时，只能采用IS NULL或IS NOT NULL，而不能采用=, <, <>, !=这些操作符。
-        logger.info("Running: " + sql);
-        ResultSet res = statement.executeQuery(sql);
+
+        String sql = "select location, Sum(number_orders),rank() over ( order by Sum(number_orders) desc) as ranking from sales_order_table group by location limit 0,10";
+
         ArrayList<WherePeopleBeauty> list = new ArrayList<>();
 
-        int count = res.getMetaData().getColumnCount();
-
+        ResultSet res=customProducer.Test(sql);
         while (res.next()) {
 
             WherePeopleBeauty wherePeopleBeauty =new WherePeopleBeauty();
@@ -78,6 +68,24 @@ public class Daily_Chemicals_Analysis {
             wherePeopleBeauty.setAmount((res.getDouble(2))/10000);
             wherePeopleBeauty.setRanking(res.getInt(3));
             list.add( wherePeopleBeauty);
+        }
+        return list;
+    }
+
+    //地区销售量
+    @RequestMapping("/sales_order_table/Regional_sales")
+    public ArrayList<RegionalSales>  Regional_sales() throws SQLException {
+
+        String sql = "select location, Sum(number_orders),rank() over ( order by Sum(number_orders) desc) as ranking from sales_order_table group by location";
+
+        ArrayList<RegionalSales> list = new ArrayList<>();
+        ResultSet res=customProducer.Test(sql);
+        while (res.next()) {
+
+            RegionalSales regionalsales =new RegionalSales();
+            regionalsales.setName(res.getString(1));
+            regionalsales.setValue((res.getDouble(2))/10000);
+            list.add( regionalsales );
         }
         return list;
     }

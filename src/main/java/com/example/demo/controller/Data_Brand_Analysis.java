@@ -23,23 +23,19 @@ public class Data_Brand_Analysis {
 
     public static final Logger logger = LoggerFactory.getLogger(Data_Cleaning.class);
 
-    @Autowired
-    @Qualifier("hiveDruidDataSource")
-    private DataSource druidDataSource;
+
 
     @Autowired
-    @Qualifier("hiveDruidTemplate")
-    private JdbcTemplate jdbcTemplate;
+    private   CustomProducer customProducer;
 
     //每日销售走势
     @RequestMapping("/table/dailySales")
     public HashMap<String,Integer> dailySales() throws SQLException {
-        // Statement statement = jdbcDataSource.getConnection().createStatement();
-        Statement statement = druidDataSource.getConnection().createStatement();
+
         String sql = "select cast(update_time as date) as day,Sum(COALESCE(sale_count,0)) from " + "cosmetics_data " +
                 "group by cast(update_time as date)  order by day";
-        logger.info("Running: " + sql);
-        ResultSet res = statement.executeQuery(sql);
+
+        ResultSet res=customProducer.Test(sql);
         HashMap<String,Integer> map= new LinkedHashMap<>();
         int count = res.getMetaData().getColumnCount();
         String str = null;
@@ -57,14 +53,13 @@ public class Data_Brand_Analysis {
 //cast(update_time as date),trade_name,Sum(COALESCE(sale_amount,0)),Sum(COALESCE(sale_count,0)),rank() over(partition by cast(update_time as date)  order by Sum(COALESCE(sale_count,0))  desc ) as ranking
     @RequestMapping("/table/Top10_Day_Brand")
     public ArrayList<ArrayList<Top10_Day_Brand>>  Top10_Day_Brand() throws SQLException {
-        // Statement statement = jdbcDataSource.getConnection().createStatement();
-        Statement statement = druidDataSource.getConnection().createStatement();
-            String sql = "select * from(select cast(update_time as date) as day,trade_name,Sum(COALESCE(sale_amount,0)) as o1,Sum(COALESCE(sale_count,0)) as o2,rank() over (partition by cast(update_time as date) order by Sum(COALESCE(sale_count,0)) desc) as ranking from cosmetics_data group by cast(update_time as date),trade_name order by day desc) as t1 where t1.ranking<=10";
-        logger.info("Running: " + sql);
-        ResultSet res = statement.executeQuery(sql);
+
+        String sql = "select * from(select cast(update_time as date) as day,trade_name,Sum(COALESCE(sale_amount,0)) as o1,Sum(COALESCE(sale_count,0)) as o2,rank() over (partition by cast(update_time as date) order by Sum(COALESCE(sale_count,0)) desc) as ranking from cosmetics_data group by cast(update_time as date),trade_name order by day desc) as t1 where t1.ranking<=10";
+
+        ResultSet res=customProducer.Test(sql);
         ArrayList<ArrayList<Top10_Day_Brand>> big_list = new ArrayList<ArrayList<Top10_Day_Brand>>();
 
-        int count = res.getMetaData().getColumnCount();
+
 
         while (res.next()) {
             ArrayList<Top10_Day_Brand> small_list = new ArrayList<Top10_Day_Brand>();
@@ -93,11 +88,11 @@ public class Data_Brand_Analysis {
     //前10美妆销售量排名
     @RequestMapping("/table/Top10_Sum_Brand")
     public ArrayList<Top10_Sum_Brand>  Top10_Sum_Brand() throws SQLException {
-        // Statement statement = jdbcDataSource.getConnection().createStatement();
-        Statement statement = druidDataSource.getConnection().createStatement();
+
         String sql = " select * from(select trade_name,Sum(COALESCE(sale_count,0)) as o2,rank() over ( order by Sum(COALESCE(sale_count,0)) desc) as ranking from cosmetics_data group by trade_name ) as t1 where t1.ranking<=10";
-        logger.info("Running: " + sql);
-        ResultSet res = statement.executeQuery(sql);
+
+
+        ResultSet res=customProducer.Test(sql);
         ArrayList<Top10_Sum_Brand> list = new ArrayList<>();
 
         int count = res.getMetaData().getColumnCount();

@@ -18,3 +18,6 @@ hive:
   maxPoolPreparedStatementPerConnectionSize: 20
   connectionErrorRetryAttempts: 0
   breakAfterAcquireFailure: true
+
+
+

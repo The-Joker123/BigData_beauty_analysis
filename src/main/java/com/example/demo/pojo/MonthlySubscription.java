@@ -6,10 +6,10 @@ package com.example.demo.pojo;
  */
 public class MonthlySubscription {
     private String order_date;
-    private int number_orders;
-    private int amount;
+    private double number_orders;
+    private double amount;
 
-    public MonthlySubscription(String order_date, int number_orders, int amount) {
+    public MonthlySubscription(String order_date,  double number_orders,  double amount) {
         this.order_date = order_date;
         this.number_orders = number_orders;
         this.amount = amount;
@@ -27,19 +27,19 @@ public class MonthlySubscription {
         this.order_date = order_date;
     }
 
-    public int getNumber_orders() {
+    public  double getNumber_orders() {
         return number_orders;
     }
 
-    public void setNumber_orders(int number_orders) {
+    public void setNumber_orders( double number_orders) {
         this.number_orders = number_orders;
     }
 
-    public int getAmount() {
+    public  double getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount( double amount) {
         this.amount = amount;
     }
 }
