@@ -46,8 +46,25 @@ fields terminated by '\t' lines terminated by '\n';
 
 -- 将数据加载到Hive中
 LOAD DATA  INPATH  '/data/销售订单表.txt' OVERWRITE INTO TABLE sales_order_table;     
-
 ```
+```SQL
+-- 建表商品信息表
+Create table  cosmetics_data(
+`commodity_code` string comment '商品编号',
+`commodity_name` string comment '商品名称',
+`commodity_small_category` string comment '商品小类',
+`commodity_large_category` string  comment  '商品大类',
+`sales_unit_price` int  comment '销售单价'
+)
+row format delimited
+fields terminated by '\t' lines terminated by '\n';
+
+-- 将数据加载到Hive中
+LOAD DATA  INPATH  '/data/商品信息表.txt' OVERWRITE INTO TABLE cosmetics_data;   
+```
+
+
+
 ### 2.2数据清洗
 
 数据处理主要包括：删除重复值，时间戳格式化，删除异常值。

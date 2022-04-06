@@ -109,7 +109,7 @@ public class Data_Cleaning {
     public List<String> selectAll_cosmetics_data() throws SQLException {
         // Statement statement = jdbcDataSource.getConnection().createStatement();
         Statement statement = druidDataSource.getConnection().createStatement();
-        String sql = "select * from " + "cosmetics_data";
+        String sql = "select * from " + "sales_order_table";
         logger.info("Running: " + sql);
         ResultSet res = statement.executeQuery(sql);
         List<String> list = new ArrayList<String>();
@@ -132,7 +132,8 @@ public class Data_Cleaning {
     public List<String> countRepetition() throws SQLException {
         // Statement statement = jdbcDataSource.getConnection().createStatement();
         Statement statement = druidDataSource.getConnection().createStatement();
-        String sql = "select update_time,id,title,price,sale_count,comment_count,trade_name,count(*) from " + "cosmetics_data group by update_time,id,title,price,sale_count,comment_count,trade_name having count(*)>1";
+        String sql = "select update_time,id,title,price,sale_count,comment_count,trade_name,count(*) from " + "cosmetics_data " +
+                "group by update_time,id,title,price,sale_count,comment_count,trade_name having count(*)>1";
         logger.info("Running: " + sql);
         ResultSet res = statement.executeQuery(sql);
         List<String> list = new ArrayList<String>();
@@ -188,7 +189,7 @@ public class Data_Cleaning {
         return result;
     }
 
-//重写数据
+//去除重写数据
     @RequestMapping("/table/overwrite")
     public String overwriteTable() {
         String sql = "insert overwrite table cosmetics_data "+" select update_time,id,title,price,sale_count,comment_count,trade_name,sale_amount from " +"cosmetics_data group by update_time,id,title,price,sale_count,comment_count,trade_name,sale_amount";
@@ -298,7 +299,8 @@ public class Data_Cleaning {
     public List<String> countRepetition_sales_order_table() throws SQLException {
         // Statement statement = jdbcDataSource.getConnection().createStatement();
         Statement statement = druidDataSource.getConnection().createStatement();
-        String sql = "select order_code,order_date,customer_code,district,province,location,product_number,number_orders,order_price,amount,count(*) from " + "sales_order_table group by order_code,order_date,customer_code,district,province,location,product_number,number_orders,order_price,amount having count(*)>1";
+        String sql = "select order_code,order_date,customer_code,district,province,location,product_number,number_orders,order_price,amount,count(*) from " +
+                "sales_order_table group by order_code,order_date,customer_code,district,province,location,product_number,number_orders,order_price,amount having count(*)>1";
         logger.info("Running: " + sql);
         ResultSet res = statement.executeQuery(sql);
         List<String> list = new ArrayList<String>();
@@ -320,7 +322,8 @@ public class Data_Cleaning {
     //合并重复数据
     @RequestMapping("/sales_order_table/overwrite")
     public String overwrite_sales_order_table() {
-        String sql = "insert overwrite table sales_order_table "+" select order_code,order_date,customer_code,district,province,location,product_number,number_orders,order_price,amount from " +"sales_order_table group by order_code,order_date,customer_code,district,province,location,product_number,number_orders,order_price,amount";
+        String sql = "insert overwrite table sales_order_table "+" select order_code,order_date,customer_code,district,province,location,product_number,number_orders,order_price,amount from " +"sales_order_table " +
+                "group by order_code,order_date,customer_code,district,province,location,product_number,number_orders,order_price,amount";
         String result = "Insert overwrite table successfully...";
         try {
             // hiveJdbcTemplate.execute(sql);
@@ -357,7 +360,7 @@ public class Data_Cleaning {
         return list;
     }
 
-
+//去除空数据
     @RequestMapping("/sales_order_table/ifnull_overwrite")
     public String ifnull_overwrite() {
         String sql = "insert overwrite table sales_order_table "+" select order_code,order_date,customer_code,district,province,location,product_number,COALESCE(number_orders,0),COALESCE(order_price,0),COALESCE(amount,0) from " +"sales_order_table";

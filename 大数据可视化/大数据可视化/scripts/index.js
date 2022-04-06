@@ -650,8 +650,8 @@ fetch('http://localhost:8080/sales_order_table/Regional_sales', {
     option = {
         backgroundColor: 'transparent',
         title: {
-            text: '全国美妆销售数据量',
-            subtext: 'data',
+            text: '2019年全国美妆销售数据量',
+            subtext: '',
             sublink: '',
             left: 'center',
             textStyle: {
@@ -662,8 +662,8 @@ fetch('http://localhost:8080/sales_order_table/Regional_sales', {
             trigger: 'item'
         },
         bmap: {
-            center: [114.31, 30.52],
-            zoom: 6,
+            center: [112.44, 34.7],
+            zoom: 4,
             roam: true,
             mapStyle: {
                 styleJson: [
@@ -881,6 +881,55 @@ fetch('http://localhost:8080/sales_order_table/Regional_sales', {
 
 });
 
+//小分类
+//哪里人最爱美
+fetch('http://localhost:8080/sales_order_table/Small_category', {
+    method: "GET",
+}).then(function (response) {
+    // 拿到响应数据并序列化成json
+    return response.json();
+}).then(function (res) {
+
+    var Small_category=[];
+    for (i in res) {
+        Small_category[i]= res[i];
+
+
+    }
+    console.log(Small_category);
+
+    var SmallCategory= echarts.init(document.getElementById('count_amount'));
+    SmallCategory.setOption({
+        color:["#87cefa","#ff7f50","#5470c6","#91cc75","#fac858","#ee6666","#73c0de","#3ba272","#fc8452","#9a60b4","#ea7ccc"],
+        title: {
+            text: 'Referer of a Website',
+            subtext: 'Fake Data',
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'item'
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left'
+        },
+        series: [
+            {
+                name: 'Access From',
+                type: 'pie',
+                radius: '50%',
+                data: Small_category,
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    })});
+
     //-----------------------------------------------------------------------------------------------------
     //前10美妆销售量排名
      fetch('http://localhost:8080/table/Top10_Day_Brand', {
@@ -966,7 +1015,7 @@ fetch('http://localhost:8080/sales_order_table/Regional_sales', {
          console.log(years);
 
 
-         var chartDom = document.getElementById('count_amount');
+         var chartDom = document.getElementById('Small_category');
          var myChart = echarts.init(chartDom);
 
          var option;
@@ -1150,3 +1199,6 @@ fetch('http://localhost:8080/sales_order_table/Regional_sales', {
          option && myChart.setOption(option);
 
     });
+
+
+

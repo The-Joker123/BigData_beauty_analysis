@@ -34,7 +34,7 @@ public class CustomProducer {
     private DataSource druidDataSource;
 
 
-    public ResultSet Test(String sql) throws SQLException {
+    public ResultSet Queen(String sql) throws SQLException {
 
         Statement statement = druidDataSource.getConnection().createStatement();
 

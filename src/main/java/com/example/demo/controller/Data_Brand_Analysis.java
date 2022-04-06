@@ -30,17 +30,17 @@ public class Data_Brand_Analysis {
 
     //每日销售走势
     @RequestMapping("/table/dailySales")
-    public HashMap<String,Integer> dailySales() throws SQLException {
+    public HashMap<String,Double> dailySales() throws SQLException {
 
-        String sql = "select cast(update_time as date) as day,Sum(COALESCE(sale_count,0)) from " + "cosmetics_data " +
+        String sql = "select cast(update_time as date) as day,Sum(COALESCE(sale_amount,0)) from " + "cosmetics_data " +
                 "group by cast(update_time as date)  order by day";
 
-        ResultSet res=customProducer.Test(sql);
-        HashMap<String,Integer> map= new LinkedHashMap<>();
+        ResultSet res=customProducer.Queen(sql);
+        HashMap<String,Double> map= new LinkedHashMap<>();
         int count = res.getMetaData().getColumnCount();
         String str = null;
         while (res.next()) {
-            map.put(res.getString(1),res.getInt(2));
+            map.put(res.getString(1),res.getDouble(2));
             logger.info(str);
         }
 
@@ -54,9 +54,12 @@ public class Data_Brand_Analysis {
     @RequestMapping("/table/Top10_Day_Brand")
     public ArrayList<ArrayList<Top10_Day_Brand>>  Top10_Day_Brand() throws SQLException {
 
-        String sql = "select * from(select cast(update_time as date) as day,trade_name,Sum(COALESCE(sale_amount,0)) as o1,Sum(COALESCE(sale_count,0)) as o2,rank() over (partition by cast(update_time as date) order by Sum(COALESCE(sale_count,0)) desc) as ranking from cosmetics_data group by cast(update_time as date),trade_name order by day desc) as t1 where t1.ranking<=10";
+        String sql = "select * from(" +
+                "select cast(update_time as date) as day,trade_name,Sum(COALESCE(sale_amount,0)) as o1,Sum(COALESCE(sale_count,0)) as o2,rank() over (partition by cast(update_time as date) order by Sum(COALESCE(sale_count,0)) desc) as ranking from cosmetics_data " +
+                "group by cast(update_time as date),trade_name order by day desc) as t1 " +
+                "where t1.ranking<=10";
 
-        ResultSet res=customProducer.Test(sql);
+        ResultSet res=customProducer.Queen(sql);
         ArrayList<ArrayList<Top10_Day_Brand>> big_list = new ArrayList<ArrayList<Top10_Day_Brand>>();
 
 
@@ -89,10 +92,11 @@ public class Data_Brand_Analysis {
     @RequestMapping("/table/Top10_Sum_Brand")
     public ArrayList<Top10_Sum_Brand>  Top10_Sum_Brand() throws SQLException {
 
-        String sql = " select * from(select trade_name,Sum(COALESCE(sale_count,0)) as o2,rank() over ( order by Sum(COALESCE(sale_count,0)) desc) as ranking from cosmetics_data group by trade_name ) as t1 where t1.ranking<=10";
+        String sql = " select * from(select trade_name,Sum(COALESCE(sale_count,0)) as o2,rank() over ( order by Sum(COALESCE(sale_count,0)) desc) as ranking from cosmetics_data " +
+                "group by trade_name ) as t1 where t1.ranking<=10";
 
 
-        ResultSet res=customProducer.Test(sql);
+        ResultSet res=customProducer.Queen(sql);
         ArrayList<Top10_Sum_Brand> list = new ArrayList<>();
 
         int count = res.getMetaData().getColumnCount();
